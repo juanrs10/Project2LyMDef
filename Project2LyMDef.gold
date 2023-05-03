@@ -1,0 +1,165 @@
+
+using gold.**
+    
+
+
+procedure main(args:String[]) begin
+	var sc:java.util.Scanner(System.$in)
+    
+	coder:=createCoder()
+   	deCoder:=createDecoder()
+	
+Utilities.testCodeDecode(coder,deCoder)
+		
+end
+function δ(Q,string) begin
+   
+   	if Q="I" and string in {'a','b','c'}  then return ⟨string, 0⟩
+   		
+ 	elseif |Q| = 2 and string in {'a','b','c'} then return ⟨Q[0], string, (Q[1]+1)%4⟩
+  	elseif |Q| = 2 or Q="E"  then return "E"
+  		
+ 	elseif |Q| = 3  and string in {'a','b','c'} then return ⟨Q[0], Q[1], string, (Q[2]+1)%4⟩
+ 		
+ 	elseif |Q| = 4  and string = '&'  then return ⟨Q[0], Q[1], Q[2], (Q[3]+1)%4,true⟩
+ 		
+ 	elseif |Q| = 4  and string in {'a','b','c'} and Q[3] in {2} then
+   	 	p1,mov:=Q[0],Q[3]
+   		if p1 = string then return ⟨string, Q[1], Q[2], (Q[3]+1)%4, true⟩
+   		else return ⟨string, Q[1], Q[2], (Q[3]+1)%4, false⟩
+   	end
+   	elseif |Q| = 5  and string = '&' and Q[3] in {2} then return ⟨Q[0], Q[1], Q[2], (Q[3]+1)%4,true⟩
+   	
+   	elseif |Q| = 5 and Q[3] in {0,1,3} and string in {'a','b','c'} and Q[4]=true then
+   	 	p1,p2,p3,mov:=Q[0],Q[1],Q[2],Q[3]
+   	 	if mov=3 and p1=string then return ⟨string, Q[1], Q[2], (Q[3]+1)%4, true⟩
+   		elseif mov=0 and p2=string then return ⟨Q[0], string, Q[2], (Q[3]+1)%4, true⟩
+   		elseif mov=1 and p3=string then return ⟨Q[0], Q[1], string, (Q[3]+1)%4, true⟩
+   		elseif mov=3 and p1!=string then return ⟨string, Q[1], Q[2], (Q[3]+1)%4, false⟩
+   		elseif mov=0 and p2!=string then return ⟨Q[0], string, Q[2], (Q[3]+1)%4, false⟩
+   		elseif mov=1 and p3!=string then return ⟨Q[0], Q[1], string, (Q[3]+1)%4, false⟩
+   	end
+   	elseif |Q| = 5 and Q[3]!=2 and string in {'a','b','c'} and Q[4]=false then
+   	 	p1,p2,p3,mov:=Q[0],Q[1],Q[2],Q[3]
+   		if mov=3  then return ⟨string, Q[1], Q[2], (Q[3]+1)%4, false⟩
+   		elseif mov=0 then return ⟨Q[0], string, Q[2], (Q[3]+1)%4, false⟩
+   		elseif mov=1 then return ⟨Q[0], Q[1], string, (Q[3]+1)%4, false⟩
+   	end
+  	else return "E"
+   	end
+end
+
+function h(Q,string) begin
+   if Q="I" and string in {'a','b','c'}  then return ""
+   		
+ 	elseif |Q| = 2 and string in {'a','b','c'} then return ""
+  	elseif |Q| = 2 or Q="E"  then return λ
+  		
+ 	elseif |Q| = 3  and string in {'a','b','c'} then return ""+string+Q[1]+Q[0]
+ 		
+ 	elseif |Q| = 4  and string in {'&'} and Q[3] in {2} then return '&'
+ 		
+ 	elseif |Q| = 4  and string in {'a','b','c'} and Q[3]=3 then
+   	 	p1,mov:=Q[0],Q[3]
+   		if p1 = string then return ""
+   		else return ""
+   	end
+   	elseif |Q| = 5  and string in {'&'} and Q[3] in {2} then return '&'
+   	
+   	elseif |Q| = 5 and Q[3] in {0,1,3} and string in {'a','b','c'} and Q[4]=true then
+   	 	p1,p2,p3,mov:=Q[0],Q[1],Q[2],Q[3]
+   	 	if mov=3 and p1=string then return ""
+   		elseif mov=1 and p3!=string then return ""+string+Q[1]+Q[0]
+   		elseif mov=1 and p3=string then return "*"
+   		elseif mov=0 and p2=string then return ""
+   		elseif mov=3 and p1!=string then return ""
+   		elseif mov=0 and p2!=string then return ""
+   	end
+   	elseif |Q| = 5 and Q[3] in {0,1,3} and string in {'a','b','c'} and Q[4]=false then
+   	 	mov:=Q[3]
+   		if mov=3 then return ""
+   		elseif mov=0 then return ""
+   		elseif mov=1 then return ""+string+Q[1]+Q[0]
+   	end
+  	else return λ
+   	end
+end
+
+function g(s) begin
+	return λ
+end
+
+
+
+
+function createDecoder():ITransducer begin
+	Q:=  {"I","E"} ∪ {⟨p1,mov⟩ | p1 in {'a','b','c'},0 <= mov < 4} ∪ {⟨p1,p2,mov⟩ | p1 in {'a','b','c'}, p2 in {'a','b','c'},0 <= mov < 4} ∪ {⟨p1,p2,p3,mov⟩ | p1 in {'a','b','c'}, p2 in {'a','b','c'},p3 in {'a','b','c'},0 <= mov < 4} ∪ {⟨p1,p2,p3,mov⟩ | p1 in {'a','b','c'}, p2 in {'a','b','c'},p3 in {'a','b','c'},0 <= mov < 4}
+	
+	Σ :={'a','b','c'}∪{'*','&'}
+	Σ´:=Σ
+	q₀:= "I"
+	F:=	 {⟨p1,p2,p3,mov⟩ | p1 in {'a','b','c'}, p2 in {'a','b','c'},p3 in {'a','b','c'},mov=2} ∪  {⟨p1,p2,p3,mov⟩ | p1 in {'a','b','c'}, p2 in {'a','b','c'},p3 in {'a','b','c'},mov=2}
+
+	return 	GDeterministicTransducer(Q,Σ,Σ´,q₀,F,δ1,g,h1)
+end
+
+	
+	
+	
+function δ1(Q,string) begin
+   
+   	if Q="I" and string in {'a','b','c'}  then return ⟨string, 0⟩
+   		
+ 	elseif |Q| = 2 and string in {'a','b','c'} then return ⟨Q[0], string, (Q[1]+1)%4⟩
+  	elseif |Q| = 2 or Q="E"  then return "E"
+  		
+ 	elseif |Q| = 3  and string in {'a','b','c'} then return ⟨Q[0], Q[1], string, (Q[2]+1)%4⟩
+ 		
+   	elseif |Q| = 4  and string in {'&'} and Q[3] in {2} then return ⟨Q[0], Q[1], Q[2], (Q[3]+1)%4⟩
+   	elseif |Q| = 4  and string in {'*'} and Q[3] in {3} then return ⟨Q[0], Q[1], Q[2], (Q[3]-1)%4⟩
+   	
+   	elseif |Q| = 4 and Q[3] in {0,1,3} and string in {'a','b','c'} then
+   	 	p1,p2,p3,mov:=Q[0],Q[1],Q[2],Q[3]
+   	 	if mov=3 then return ⟨string, Q[1], Q[2], (Q[3]+1)%4⟩
+   		elseif mov=0 then return ⟨Q[0], string, Q[2], (Q[3]+1)%4⟩
+   		elseif mov=1 then return ⟨Q[0], Q[1], string, (Q[3]+1)%4⟩
+   	end
+  	else return "E"
+   	end
+end
+
+function h1(Q,string) begin
+   if Q="I" and string in {'a','b','c'}  then return ""
+   		
+ 	elseif |Q| = 2 and string in {'a','b','c'} then return ""
+  	elseif |Q| = 2 or Q="E"  then return λ
+  		
+ 	elseif |Q| = 3  and string in {'a','b','c'} then return ""+string+Q[1]+Q[0]
+ 		
+ 	elseif |Q| = 4  and string in {'&'} and Q[3] in {2} then return '&'
+   	elseif |Q| = 4  and string in {'*'} and Q[3] in {3} then return ""+Q[2]+Q[1]+Q[0]
+   	
+   	elseif |Q| = 4 and Q[3] in {0,1,3} and string in {'a','b','c'} then
+   	 	p1,p2,p3,mov:=Q[0],Q[1],Q[2],Q[3]
+   	 	if mov=3 then return ""
+   		elseif mov=0 then return ""
+   		elseif mov=1 then return ""+string+Q[1]+Q[0]
+   	end
+  	else return λ
+   	end
+end
+
+
+function createCoder():ITransducer begin
+	Σ :={'a','b','c'}∪{ '&'}
+	Q:=  {"I","E"} 	
+						∪ {⟨p1,mov⟩ | p1 in {'a','b','c'},0 <= mov < 4} 
+						∪ {⟨p1,p2,mov⟩ | p1 in {'a','b','c'}, p2 in {'a','b','c'},0 <= mov < 4} 
+						∪ {⟨p1,p2,p3,mov,verificar⟩ | p1 in {'a','b','c'}, p2 in {'a','b','c'},p3 in {'a','b','c'},0 <= mov < 4, verificar in {true,false}} ∪ {⟨p1,p2,p3,mov⟩ | p1 in {'a','b','c'}, p2 in {'a','b','c'},p3 in {'a','b','c'},0 <= mov < 4}
+	Σ´:=Σ∪{ '*'}
+	q₀:= "I"
+	F:=	 {⟨p1,p2,p3,mov,verificar⟩ | p1 in {'a','b','c'}, p2 in {'a','b','c'},p3 in {'a','b','c'},mov=2, verificar in {true,false}} ∪  {⟨p1,p2,p3,mov⟩ | p1 in {'a','b','c'}, p2 in {'a','b','c'},p3 in {'a','b','c'},mov=2}
+
+	return 	GDeterministicTransducer(Q,Σ,Σ´,q₀,F,δ,g,h)
+end
+
